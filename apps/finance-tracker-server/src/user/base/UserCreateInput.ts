@@ -11,10 +11,19 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, MaxLength, IsOptional } from "class-validator";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
+import { BudgetCreateNestedManyWithoutUsersInput } from "./BudgetCreateNestedManyWithoutUsersInput";
+import { Type } from "class-transformer";
+import { AccountCreateNestedManyWithoutUsersInput } from "./AccountCreateNestedManyWithoutUsersInput";
+import { PlaidIntegrationCreateNestedManyWithoutUsersInput } from "./PlaidIntegrationCreateNestedManyWithoutUsersInput";
 
 @InputType()
 class UserCreateInput {
@@ -75,6 +84,42 @@ class UserCreateInput {
   @IsJSONValue()
   @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => BudgetCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => BudgetCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => BudgetCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  budgets?: BudgetCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => AccountCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => AccountCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => AccountCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  accounts?: AccountCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => PlaidIntegrationCreateNestedManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => PlaidIntegrationCreateNestedManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => PlaidIntegrationCreateNestedManyWithoutUsersInput, {
+    nullable: true,
+  })
+  plaidIntegrations?: PlaidIntegrationCreateNestedManyWithoutUsersInput;
 }
 
 export { UserCreateInput as UserCreateInput };

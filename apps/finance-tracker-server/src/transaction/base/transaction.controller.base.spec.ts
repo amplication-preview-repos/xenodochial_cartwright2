@@ -21,23 +21,39 @@ const CREATE_INPUT = {
   id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  category: "exampleCategory",
+  description: "exampleDescription",
+  amount: 42.42,
+  date: new Date(),
 };
 const CREATE_RESULT = {
   id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  category: "exampleCategory",
+  description: "exampleDescription",
+  amount: 42.42,
+  date: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
     id: "exampleId",
     createdAt: new Date(),
     updatedAt: new Date(),
+    category: "exampleCategory",
+    description: "exampleDescription",
+    amount: 42.42,
+    date: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
   id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  category: "exampleCategory",
+  description: "exampleDescription",
+  amount: 42.42,
+  date: new Date(),
 };
 
 const service = {
@@ -124,6 +140,7 @@ describe("Transaction", () => {
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        date: CREATE_RESULT.date.toISOString(),
       });
   });
 
@@ -136,6 +153,7 @@ describe("Transaction", () => {
           ...FIND_MANY_RESULT[0],
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          date: FIND_MANY_RESULT[0].date.toISOString(),
         },
       ]);
   });
@@ -159,6 +177,7 @@ describe("Transaction", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        date: FIND_ONE_RESULT.date.toISOString(),
       });
   });
 
@@ -172,6 +191,7 @@ describe("Transaction", () => {
         ...CREATE_RESULT,
         createdAt: CREATE_RESULT.createdAt.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        date: CREATE_RESULT.date.toISOString(),
       })
       .then(function () {
         agent

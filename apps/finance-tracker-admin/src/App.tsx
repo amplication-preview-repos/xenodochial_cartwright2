@@ -5,22 +5,22 @@ import { theme } from "./theme/theme";
 import Login from "./Login";
 import "./App.scss";
 import Dashboard from "./pages/Dashboard";
-import { AccountList } from "./account/AccountList";
-import { AccountCreate } from "./account/AccountCreate";
-import { AccountEdit } from "./account/AccountEdit";
-import { AccountShow } from "./account/AccountShow";
 import { TransactionList } from "./transaction/TransactionList";
 import { TransactionCreate } from "./transaction/TransactionCreate";
 import { TransactionEdit } from "./transaction/TransactionEdit";
 import { TransactionShow } from "./transaction/TransactionShow";
-import { PlaidIntegrationList } from "./plaidIntegration/PlaidIntegrationList";
-import { PlaidIntegrationCreate } from "./plaidIntegration/PlaidIntegrationCreate";
-import { PlaidIntegrationEdit } from "./plaidIntegration/PlaidIntegrationEdit";
-import { PlaidIntegrationShow } from "./plaidIntegration/PlaidIntegrationShow";
+import { AccountList } from "./account/AccountList";
+import { AccountCreate } from "./account/AccountCreate";
+import { AccountEdit } from "./account/AccountEdit";
+import { AccountShow } from "./account/AccountShow";
 import { BudgetList } from "./budget/BudgetList";
 import { BudgetCreate } from "./budget/BudgetCreate";
 import { BudgetEdit } from "./budget/BudgetEdit";
 import { BudgetShow } from "./budget/BudgetShow";
+import { PlaidIntegrationList } from "./plaidIntegration/PlaidIntegrationList";
+import { PlaidIntegrationCreate } from "./plaidIntegration/PlaidIntegrationCreate";
+import { PlaidIntegrationEdit } from "./plaidIntegration/PlaidIntegrationEdit";
+import { PlaidIntegrationShow } from "./plaidIntegration/PlaidIntegrationShow";
 import { UserList } from "./user/UserList";
 import { UserCreate } from "./user/UserCreate";
 import { UserEdit } from "./user/UserEdit";
@@ -52,13 +52,6 @@ const App = (): React.ReactElement => {
         loginPage={Login}
       >
         <Resource
-          name="Account"
-          list={AccountList}
-          edit={AccountEdit}
-          create={AccountCreate}
-          show={AccountShow}
-        />
-        <Resource
           name="Transaction"
           list={TransactionList}
           edit={TransactionEdit}
@@ -66,11 +59,11 @@ const App = (): React.ReactElement => {
           show={TransactionShow}
         />
         <Resource
-          name="PlaidIntegration"
-          list={PlaidIntegrationList}
-          edit={PlaidIntegrationEdit}
-          create={PlaidIntegrationCreate}
-          show={PlaidIntegrationShow}
+          name="Account"
+          list={AccountList}
+          edit={AccountEdit}
+          create={AccountCreate}
+          show={AccountShow}
         />
         <Resource
           name="Budget"
@@ -78,6 +71,13 @@ const App = (): React.ReactElement => {
           edit={BudgetEdit}
           create={BudgetCreate}
           show={BudgetShow}
+        />
+        <Resource
+          name="PlaidIntegration"
+          list={PlaidIntegrationList}
+          edit={PlaidIntegrationEdit}
+          create={PlaidIntegrationCreate}
+          show={PlaidIntegrationShow}
         />
         <Resource
           name="User"

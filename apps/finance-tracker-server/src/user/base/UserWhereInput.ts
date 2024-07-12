@@ -13,8 +13,11 @@ import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { StringFilter } from "../../util/StringFilter";
 import { Type } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsOptional, ValidateNested } from "class-validator";
 import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { BudgetListRelationFilter } from "../../budget/base/BudgetListRelationFilter";
+import { AccountListRelationFilter } from "../../account/base/AccountListRelationFilter";
+import { PlaidIntegrationListRelationFilter } from "../../plaidIntegration/base/PlaidIntegrationListRelationFilter";
 
 @InputType()
 class UserWhereInput {
@@ -72,6 +75,42 @@ class UserWhereInput {
     nullable: true,
   })
   email?: StringNullableFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => BudgetListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => BudgetListRelationFilter)
+  @IsOptional()
+  @Field(() => BudgetListRelationFilter, {
+    nullable: true,
+  })
+  budgets?: BudgetListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => AccountListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => AccountListRelationFilter)
+  @IsOptional()
+  @Field(() => AccountListRelationFilter, {
+    nullable: true,
+  })
+  accounts?: AccountListRelationFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => PlaidIntegrationListRelationFilter,
+  })
+  @ValidateNested()
+  @Type(() => PlaidIntegrationListRelationFilter)
+  @IsOptional()
+  @Field(() => PlaidIntegrationListRelationFilter, {
+    nullable: true,
+  })
+  plaidIntegrations?: PlaidIntegrationListRelationFilter;
 }
 
 export { UserWhereInput as UserWhereInput };

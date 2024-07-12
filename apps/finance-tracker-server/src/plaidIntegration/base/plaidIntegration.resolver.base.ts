@@ -18,11 +18,15 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { PlaidIntegration } from "./PlaidIntegration";
 import { PlaidIntegrationCountArgs } from "./PlaidIntegrationCountArgs";
 import { PlaidIntegrationFindManyArgs } from "./PlaidIntegrationFindManyArgs";
 import { PlaidIntegrationFindUniqueArgs } from "./PlaidIntegrationFindUniqueArgs";
+import { CreatePlaidIntegrationArgs } from "./CreatePlaidIntegrationArgs";
+import { UpdatePlaidIntegrationArgs } from "./UpdatePlaidIntegrationArgs";
 import { DeletePlaidIntegrationArgs } from "./DeletePlaidIntegrationArgs";
+import { User } from "../../user/base/User";
 import { PlaidIntegrationService } from "../plaidIntegration.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => PlaidIntegration)
@@ -77,6 +81,63 @@ export class PlaidIntegrationResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => PlaidIntegration)
+  @nestAccessControl.UseRoles({
+    resource: "PlaidIntegration",
+    action: "create",
+    possession: "any",
+  })
+  async createPlaidIntegration(
+    @graphql.Args() args: CreatePlaidIntegrationArgs
+  ): Promise<PlaidIntegration> {
+    return await this.service.createPlaidIntegration({
+      ...args,
+      data: {
+        ...args.data,
+
+        user: args.data.user
+          ? {
+              connect: args.data.user,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => PlaidIntegration)
+  @nestAccessControl.UseRoles({
+    resource: "PlaidIntegration",
+    action: "update",
+    possession: "any",
+  })
+  async updatePlaidIntegration(
+    @graphql.Args() args: UpdatePlaidIntegrationArgs
+  ): Promise<PlaidIntegration | null> {
+    try {
+      return await this.service.updatePlaidIntegration({
+        ...args,
+        data: {
+          ...args.data,
+
+          user: args.data.user
+            ? {
+                connect: args.data.user,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
   @graphql.Mutation(() => PlaidIntegration)
   @nestAccessControl.UseRoles({
     resource: "PlaidIntegration",
@@ -96,5 +157,26 @@ export class PlaidIntegrationResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "user",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async getUser(
+    @graphql.Parent() parent: PlaidIntegration
+  ): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

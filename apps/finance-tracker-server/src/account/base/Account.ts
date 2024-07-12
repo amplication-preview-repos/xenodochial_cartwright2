@@ -11,8 +11,23 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsDate } from "class-validator";
+
+import {
+  IsString,
+  IsDate,
+  IsNumber,
+  Min,
+  Max,
+  IsOptional,
+  IsEnum,
+  MaxLength,
+  ValidateNested,
+} from "class-validator";
+
 import { Type } from "class-transformer";
+import { EnumAccountTypeField } from "./EnumAccountTypeField";
+import { User } from "../../user/base/User";
+import { Transaction } from "../../transaction/base/Transaction";
 
 @ObjectType()
 class Account {
@@ -39,6 +54,72 @@ class Account {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @Min(-999999999)
+  @Max(999999999)
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  balance!: number | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumAccountTypeField,
+  })
+  @IsEnum(EnumAccountTypeField)
+  @IsOptional()
+  @Field(() => EnumAccountTypeField, {
+    nullable: true,
+  })
+  typeField?: "Option1" | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  institution!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => User,
+  })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
+  user?: User | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @MaxLength(1000)
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  name!: string | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => [Transaction],
+  })
+  @ValidateNested()
+  @Type(() => Transaction)
+  @IsOptional()
+  transactions?: Array<Transaction>;
 }
 
 export { Account as Account };

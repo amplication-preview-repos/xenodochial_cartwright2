@@ -11,10 +11,19 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, MaxLength, IsOptional } from "class-validator";
+import {
+  IsString,
+  MaxLength,
+  IsOptional,
+  ValidateNested,
+} from "class-validator";
 import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
+import { BudgetUpdateManyWithoutUsersInput } from "./BudgetUpdateManyWithoutUsersInput";
+import { Type } from "class-transformer";
+import { AccountUpdateManyWithoutUsersInput } from "./AccountUpdateManyWithoutUsersInput";
+import { PlaidIntegrationUpdateManyWithoutUsersInput } from "./PlaidIntegrationUpdateManyWithoutUsersInput";
 
 @InputType()
 class UserUpdateInput {
@@ -84,6 +93,42 @@ class UserUpdateInput {
     nullable: true,
   })
   roles?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => BudgetUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => BudgetUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => BudgetUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  budgets?: BudgetUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => AccountUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => AccountUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => AccountUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  accounts?: AccountUpdateManyWithoutUsersInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => PlaidIntegrationUpdateManyWithoutUsersInput,
+  })
+  @ValidateNested()
+  @Type(() => PlaidIntegrationUpdateManyWithoutUsersInput)
+  @IsOptional()
+  @Field(() => PlaidIntegrationUpdateManyWithoutUsersInput, {
+    nullable: true,
+  })
+  plaidIntegrations?: PlaidIntegrationUpdateManyWithoutUsersInput;
 }
 
 export { UserUpdateInput as UserUpdateInput };

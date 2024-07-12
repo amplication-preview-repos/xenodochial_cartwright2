@@ -18,11 +18,17 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Account } from "./Account";
 import { AccountCountArgs } from "./AccountCountArgs";
 import { AccountFindManyArgs } from "./AccountFindManyArgs";
 import { AccountFindUniqueArgs } from "./AccountFindUniqueArgs";
+import { CreateAccountArgs } from "./CreateAccountArgs";
+import { UpdateAccountArgs } from "./UpdateAccountArgs";
 import { DeleteAccountArgs } from "./DeleteAccountArgs";
+import { TransactionFindManyArgs } from "../../transaction/base/TransactionFindManyArgs";
+import { Transaction } from "../../transaction/base/Transaction";
+import { User } from "../../user/base/User";
 import { AccountService } from "../account.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Account)
@@ -77,6 +83,63 @@ export class AccountResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Account)
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "create",
+    possession: "any",
+  })
+  async createAccount(
+    @graphql.Args() args: CreateAccountArgs
+  ): Promise<Account> {
+    return await this.service.createAccount({
+      ...args,
+      data: {
+        ...args.data,
+
+        user: args.data.user
+          ? {
+              connect: args.data.user,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Account)
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "update",
+    possession: "any",
+  })
+  async updateAccount(
+    @graphql.Args() args: UpdateAccountArgs
+  ): Promise<Account | null> {
+    try {
+      return await this.service.updateAccount({
+        ...args,
+        data: {
+          ...args.data,
+
+          user: args.data.user
+            ? {
+                connect: args.data.user,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
   @graphql.Mutation(() => Account)
   @nestAccessControl.UseRoles({
     resource: "Account",
@@ -96,5 +159,44 @@ export class AccountResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Transaction], { name: "transactions" })
+  @nestAccessControl.UseRoles({
+    resource: "Transaction",
+    action: "read",
+    possession: "any",
+  })
+  async findTransactions(
+    @graphql.Parent() parent: Account,
+    @graphql.Args() args: TransactionFindManyArgs
+  ): Promise<Transaction[]> {
+    const results = await this.service.findTransactions(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "user",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async getUser(@graphql.Parent() parent: Account): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

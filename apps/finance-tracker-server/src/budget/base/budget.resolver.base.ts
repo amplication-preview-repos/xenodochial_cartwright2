@@ -18,11 +18,15 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Budget } from "./Budget";
 import { BudgetCountArgs } from "./BudgetCountArgs";
 import { BudgetFindManyArgs } from "./BudgetFindManyArgs";
 import { BudgetFindUniqueArgs } from "./BudgetFindUniqueArgs";
+import { CreateBudgetArgs } from "./CreateBudgetArgs";
+import { UpdateBudgetArgs } from "./UpdateBudgetArgs";
 import { DeleteBudgetArgs } from "./DeleteBudgetArgs";
+import { User } from "../../user/base/User";
 import { BudgetService } from "../budget.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Budget)
@@ -75,6 +79,61 @@ export class BudgetResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Budget)
+  @nestAccessControl.UseRoles({
+    resource: "Budget",
+    action: "create",
+    possession: "any",
+  })
+  async createBudget(@graphql.Args() args: CreateBudgetArgs): Promise<Budget> {
+    return await this.service.createBudget({
+      ...args,
+      data: {
+        ...args.data,
+
+        user: args.data.user
+          ? {
+              connect: args.data.user,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Budget)
+  @nestAccessControl.UseRoles({
+    resource: "Budget",
+    action: "update",
+    possession: "any",
+  })
+  async updateBudget(
+    @graphql.Args() args: UpdateBudgetArgs
+  ): Promise<Budget | null> {
+    try {
+      return await this.service.updateBudget({
+        ...args,
+        data: {
+          ...args.data,
+
+          user: args.data.user
+            ? {
+                connect: args.data.user,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
   @graphql.Mutation(() => Budget)
   @nestAccessControl.UseRoles({
     resource: "Budget",
@@ -94,5 +153,24 @@ export class BudgetResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: "user",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "User",
+    action: "read",
+    possession: "any",
+  })
+  async getUser(@graphql.Parent() parent: Budget): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

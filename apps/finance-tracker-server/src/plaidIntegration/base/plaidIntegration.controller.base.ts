@@ -49,11 +49,28 @@ export class PlaidIntegrationControllerBase {
     @common.Body() data: PlaidIntegrationCreateInput
   ): Promise<PlaidIntegration> {
     return await this.service.createPlaidIntegration({
-      data: data,
+      data: {
+        ...data,
+
+        user: data.user
+          ? {
+              connect: data.user,
+            }
+          : undefined,
+      },
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
+        itemId: true,
+        institutionName: true,
+        accessToken: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
@@ -80,6 +97,15 @@ export class PlaidIntegrationControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        itemId: true,
+        institutionName: true,
+        accessToken: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
   }
@@ -105,6 +131,15 @@ export class PlaidIntegrationControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        itemId: true,
+        institutionName: true,
+        accessToken: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     if (result === null) {
@@ -134,11 +169,28 @@ export class PlaidIntegrationControllerBase {
     try {
       return await this.service.updatePlaidIntegration({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          user: data.user
+            ? {
+                connect: data.user,
+              }
+            : undefined,
+        },
         select: {
           id: true,
           createdAt: true,
           updatedAt: true,
+          itemId: true,
+          institutionName: true,
+          accessToken: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
     } catch (error) {
@@ -172,6 +224,15 @@ export class PlaidIntegrationControllerBase {
           id: true,
           createdAt: true,
           updatedAt: true,
+          itemId: true,
+          institutionName: true,
+          accessToken: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
     } catch (error) {

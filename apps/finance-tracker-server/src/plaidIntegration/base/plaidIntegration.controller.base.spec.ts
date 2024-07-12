@@ -21,23 +21,35 @@ const CREATE_INPUT = {
   id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  itemId: "exampleItemId",
+  institutionName: "exampleInstitutionName",
+  accessToken: "exampleAccessToken",
 };
 const CREATE_RESULT = {
   id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  itemId: "exampleItemId",
+  institutionName: "exampleInstitutionName",
+  accessToken: "exampleAccessToken",
 };
 const FIND_MANY_RESULT = [
   {
     id: "exampleId",
     createdAt: new Date(),
     updatedAt: new Date(),
+    itemId: "exampleItemId",
+    institutionName: "exampleInstitutionName",
+    accessToken: "exampleAccessToken",
   },
 ];
 const FIND_ONE_RESULT = {
   id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  itemId: "exampleItemId",
+  institutionName: "exampleInstitutionName",
+  accessToken: "exampleAccessToken",
 };
 
 const service = {

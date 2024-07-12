@@ -49,11 +49,31 @@ export class TransactionControllerBase {
     @common.Body() data: TransactionCreateInput
   ): Promise<Transaction> {
     return await this.service.createTransaction({
-      data: data,
+      data: {
+        ...data,
+
+        account: data.account
+          ? {
+              connect: data.account,
+            }
+          : undefined,
+      },
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
+        category: true,
+        description: true,
+
+        account: {
+          select: {
+            id: true,
+          },
+        },
+
+        amount: true,
+        date: true,
+        typeField: true,
       },
     });
   }
@@ -78,6 +98,18 @@ export class TransactionControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        category: true,
+        description: true,
+
+        account: {
+          select: {
+            id: true,
+          },
+        },
+
+        amount: true,
+        date: true,
+        typeField: true,
       },
     });
   }
@@ -103,6 +135,18 @@ export class TransactionControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        category: true,
+        description: true,
+
+        account: {
+          select: {
+            id: true,
+          },
+        },
+
+        amount: true,
+        date: true,
+        typeField: true,
       },
     });
     if (result === null) {
@@ -132,11 +176,31 @@ export class TransactionControllerBase {
     try {
       return await this.service.updateTransaction({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          account: data.account
+            ? {
+                connect: data.account,
+              }
+            : undefined,
+        },
         select: {
           id: true,
           createdAt: true,
           updatedAt: true,
+          category: true,
+          description: true,
+
+          account: {
+            select: {
+              id: true,
+            },
+          },
+
+          amount: true,
+          date: true,
+          typeField: true,
         },
       });
     } catch (error) {
@@ -170,6 +234,18 @@ export class TransactionControllerBase {
           id: true,
           createdAt: true,
           updatedAt: true,
+          category: true,
+          description: true,
+
+          account: {
+            select: {
+              id: true,
+            },
+          },
+
+          amount: true,
+          date: true,
+          typeField: true,
         },
       });
     } catch (error) {

@@ -13,6 +13,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   Prisma,
   PlaidIntegration as PrismaPlaidIntegration,
+  User as PrismaUser,
 } from "@prisma/client";
 
 export class PlaidIntegrationServiceBase {
@@ -48,5 +49,13 @@ export class PlaidIntegrationServiceBase {
     args: Prisma.PlaidIntegrationDeleteArgs
   ): Promise<PrismaPlaidIntegration> {
     return this.prisma.plaidIntegration.delete(args);
+  }
+
+  async getUser(parentId: string): Promise<PrismaUser | null> {
+    return this.prisma.plaidIntegration
+      .findUnique({
+        where: { id: parentId },
+      })
+      .user();
   }
 }

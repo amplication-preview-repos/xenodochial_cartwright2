@@ -26,6 +26,9 @@ import { Account } from "./Account";
 import { AccountFindManyArgs } from "./AccountFindManyArgs";
 import { AccountWhereUniqueInput } from "./AccountWhereUniqueInput";
 import { AccountUpdateInput } from "./AccountUpdateInput";
+import { TransactionFindManyArgs } from "../../transaction/base/TransactionFindManyArgs";
+import { Transaction } from "../../transaction/base/Transaction";
+import { TransactionWhereUniqueInput } from "../../transaction/base/TransactionWhereUniqueInput";
 
 @swagger.ApiBearerAuth()
 @common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
@@ -49,11 +52,30 @@ export class AccountControllerBase {
     @common.Body() data: AccountCreateInput
   ): Promise<Account> {
     return await this.service.createAccount({
-      data: data,
+      data: {
+        ...data,
+
+        user: data.user
+          ? {
+              connect: data.user,
+            }
+          : undefined,
+      },
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
+        balance: true,
+        typeField: true,
+        institution: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+
+        name: true,
       },
     });
   }
@@ -78,6 +100,17 @@ export class AccountControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        balance: true,
+        typeField: true,
+        institution: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+
+        name: true,
       },
     });
   }
@@ -103,6 +136,17 @@ export class AccountControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        balance: true,
+        typeField: true,
+        institution: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+
+        name: true,
       },
     });
     if (result === null) {
@@ -132,11 +176,30 @@ export class AccountControllerBase {
     try {
       return await this.service.updateAccount({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          user: data.user
+            ? {
+                connect: data.user,
+              }
+            : undefined,
+        },
         select: {
           id: true,
           createdAt: true,
           updatedAt: true,
+          balance: true,
+          typeField: true,
+          institution: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
+
+          name: true,
         },
       });
     } catch (error) {
@@ -170,6 +233,17 @@ export class AccountControllerBase {
           id: true,
           createdAt: true,
           updatedAt: true,
+          balance: true,
+          typeField: true,
+          institution: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
+
+          name: true,
         },
       });
     } catch (error) {
@@ -180,5 +254,112 @@ export class AccountControllerBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @common.Get("/:id/transactions")
+  @ApiNestedQuery(TransactionFindManyArgs)
+  @nestAccessControl.UseRoles({
+    resource: "Transaction",
+    action: "read",
+    possession: "any",
+  })
+  async findTransactions(
+    @common.Req() request: Request,
+    @common.Param() params: AccountWhereUniqueInput
+  ): Promise<Transaction[]> {
+    const query = plainToClass(TransactionFindManyArgs, request.query);
+    const results = await this.service.findTransactions(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        category: true,
+        description: true,
+
+        account: {
+          select: {
+            id: true,
+          },
+        },
+
+        amount: true,
+        date: true,
+        typeField: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        `No resource was found for ${JSON.stringify(params)}`
+      );
+    }
+    return results;
+  }
+
+  @common.Post("/:id/transactions")
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "update",
+    possession: "any",
+  })
+  async connectTransactions(
+    @common.Param() params: AccountWhereUniqueInput,
+    @common.Body() body: TransactionWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      transactions: {
+        connect: body,
+      },
+    };
+    await this.service.updateAccount({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch("/:id/transactions")
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "update",
+    possession: "any",
+  })
+  async updateTransactions(
+    @common.Param() params: AccountWhereUniqueInput,
+    @common.Body() body: TransactionWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      transactions: {
+        set: body,
+      },
+    };
+    await this.service.updateAccount({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete("/:id/transactions")
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "update",
+    possession: "any",
+  })
+  async disconnectTransactions(
+    @common.Param() params: AccountWhereUniqueInput,
+    @common.Body() body: TransactionWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      transactions: {
+        disconnect: body,
+      },
+    };
+    await this.service.updateAccount({
+      where: params,
+      data,
+      select: { id: true },
+    });
   }
 }

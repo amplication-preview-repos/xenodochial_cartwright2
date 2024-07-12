@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { AccountModule } from "./account/account.module";
 import { TransactionModule } from "./transaction/transaction.module";
-import { PlaidIntegrationModule } from "./plaidIntegration/plaidIntegration.module";
+import { AccountModule } from "./account/account.module";
 import { BudgetModule } from "./budget/budget.module";
+import { PlaidIntegrationModule } from "./plaidIntegration/plaidIntegration.module";
 import { UserModule } from "./user/user.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -21,10 +21,10 @@ import { AuthModule } from "./auth/auth.module";
   imports: [
     ACLModule,
     AuthModule,
-    AccountModule,
     TransactionModule,
-    PlaidIntegrationModule,
+    AccountModule,
     BudgetModule,
+    PlaidIntegrationModule,
     UserModule,
     HealthModule,
     PrismaModule,

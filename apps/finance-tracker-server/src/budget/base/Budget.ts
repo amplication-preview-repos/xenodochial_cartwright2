@@ -11,8 +11,19 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsDate } from "class-validator";
+import {
+  IsString,
+  IsDate,
+  IsNumber,
+  Min,
+  Max,
+  IsOptional,
+  ValidateNested,
+  IsEnum,
+} from "class-validator";
 import { Type } from "class-transformer";
+import { User } from "../../user/base/User";
+import { EnumBudgetPeriod } from "./EnumBudgetPeriod";
 
 @ObjectType()
 class Budget {
@@ -39,6 +50,61 @@ class Budget {
   @Type(() => Date)
   @Field(() => Date)
   updatedAt!: Date;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @Min(-999999999)
+  @Max(999999999)
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  totalAmount!: number | null;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  startDate!: Date | null;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  endDate!: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => User,
+  })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
+  user?: User | null;
+
+  @ApiProperty({
+    required: false,
+    enum: EnumBudgetPeriod,
+  })
+  @IsEnum(EnumBudgetPeriod)
+  @IsOptional()
+  @Field(() => EnumBudgetPeriod, {
+    nullable: true,
+  })
+  period?: "Option1" | null;
 }
 
 export { Budget as Budget };

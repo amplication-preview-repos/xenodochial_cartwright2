@@ -26,6 +26,12 @@ import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
 import { DeleteUserArgs } from "./DeleteUserArgs";
+import { BudgetFindManyArgs } from "../../budget/base/BudgetFindManyArgs";
+import { Budget } from "../../budget/base/Budget";
+import { AccountFindManyArgs } from "../../account/base/AccountFindManyArgs";
+import { Account } from "../../account/base/Account";
+import { PlaidIntegrationFindManyArgs } from "../../plaidIntegration/base/PlaidIntegrationFindManyArgs";
+import { PlaidIntegration } from "../../plaidIntegration/base/PlaidIntegration";
 import { UserService } from "../user.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => User)
@@ -130,5 +136,65 @@ export class UserResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Budget], { name: "budgets" })
+  @nestAccessControl.UseRoles({
+    resource: "Budget",
+    action: "read",
+    possession: "any",
+  })
+  async findBudgets(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: BudgetFindManyArgs
+  ): Promise<Budget[]> {
+    const results = await this.service.findBudgets(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [Account], { name: "accounts" })
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "read",
+    possession: "any",
+  })
+  async findAccounts(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: AccountFindManyArgs
+  ): Promise<Account[]> {
+    const results = await this.service.findAccounts(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => [PlaidIntegration], { name: "plaidIntegrations" })
+  @nestAccessControl.UseRoles({
+    resource: "PlaidIntegration",
+    action: "read",
+    possession: "any",
+  })
+  async findPlaidIntegrations(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: PlaidIntegrationFindManyArgs
+  ): Promise<PlaidIntegration[]> {
+    const results = await this.service.findPlaidIntegrations(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }

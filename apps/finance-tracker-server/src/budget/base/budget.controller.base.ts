@@ -47,11 +47,30 @@ export class BudgetControllerBase {
   })
   async createBudget(@common.Body() data: BudgetCreateInput): Promise<Budget> {
     return await this.service.createBudget({
-      data: data,
+      data: {
+        ...data,
+
+        user: data.user
+          ? {
+              connect: data.user,
+            }
+          : undefined,
+      },
       select: {
         id: true,
         createdAt: true,
         updatedAt: true,
+        totalAmount: true,
+        startDate: true,
+        endDate: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+
+        period: true,
       },
     });
   }
@@ -76,6 +95,17 @@ export class BudgetControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        totalAmount: true,
+        startDate: true,
+        endDate: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+
+        period: true,
       },
     });
   }
@@ -101,6 +131,17 @@ export class BudgetControllerBase {
         id: true,
         createdAt: true,
         updatedAt: true,
+        totalAmount: true,
+        startDate: true,
+        endDate: true,
+
+        user: {
+          select: {
+            id: true,
+          },
+        },
+
+        period: true,
       },
     });
     if (result === null) {
@@ -130,11 +171,30 @@ export class BudgetControllerBase {
     try {
       return await this.service.updateBudget({
         where: params,
-        data: data,
+        data: {
+          ...data,
+
+          user: data.user
+            ? {
+                connect: data.user,
+              }
+            : undefined,
+        },
         select: {
           id: true,
           createdAt: true,
           updatedAt: true,
+          totalAmount: true,
+          startDate: true,
+          endDate: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
+
+          period: true,
         },
       });
     } catch (error) {
@@ -168,6 +228,17 @@ export class BudgetControllerBase {
           id: true,
           createdAt: true,
           updatedAt: true,
+          totalAmount: true,
+          startDate: true,
+          endDate: true,
+
+          user: {
+            select: {
+              id: true,
+            },
+          },
+
+          period: true,
         },
       });
     } catch (error) {

@@ -18,11 +18,15 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { Transaction } from "./Transaction";
 import { TransactionCountArgs } from "./TransactionCountArgs";
 import { TransactionFindManyArgs } from "./TransactionFindManyArgs";
 import { TransactionFindUniqueArgs } from "./TransactionFindUniqueArgs";
+import { CreateTransactionArgs } from "./CreateTransactionArgs";
+import { UpdateTransactionArgs } from "./UpdateTransactionArgs";
 import { DeleteTransactionArgs } from "./DeleteTransactionArgs";
+import { Account } from "../../account/base/Account";
 import { TransactionService } from "../transaction.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Transaction)
@@ -77,6 +81,63 @@ export class TransactionResolverBase {
     return result;
   }
 
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Transaction)
+  @nestAccessControl.UseRoles({
+    resource: "Transaction",
+    action: "create",
+    possession: "any",
+  })
+  async createTransaction(
+    @graphql.Args() args: CreateTransactionArgs
+  ): Promise<Transaction> {
+    return await this.service.createTransaction({
+      ...args,
+      data: {
+        ...args.data,
+
+        account: args.data.account
+          ? {
+              connect: args.data.account,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Transaction)
+  @nestAccessControl.UseRoles({
+    resource: "Transaction",
+    action: "update",
+    possession: "any",
+  })
+  async updateTransaction(
+    @graphql.Args() args: UpdateTransactionArgs
+  ): Promise<Transaction | null> {
+    try {
+      return await this.service.updateTransaction({
+        ...args,
+        data: {
+          ...args.data,
+
+          account: args.data.account
+            ? {
+                connect: args.data.account,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new GraphQLError(
+          `No resource was found for ${JSON.stringify(args.where)}`
+        );
+      }
+      throw error;
+    }
+  }
+
   @graphql.Mutation(() => Transaction)
   @nestAccessControl.UseRoles({
     resource: "Transaction",
@@ -96,5 +157,26 @@ export class TransactionResolverBase {
       }
       throw error;
     }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => Account, {
+    nullable: true,
+    name: "account",
+  })
+  @nestAccessControl.UseRoles({
+    resource: "Account",
+    action: "read",
+    possession: "any",
+  })
+  async getAccount(
+    @graphql.Parent() parent: Transaction
+  ): Promise<Account | null> {
+    const result = await this.service.getAccount(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }

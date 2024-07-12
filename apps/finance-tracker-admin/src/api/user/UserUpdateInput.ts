@@ -1,4 +1,7 @@
 import { InputJsonValue } from "../../types";
+import { BudgetUpdateManyWithoutUsersInput } from "./BudgetUpdateManyWithoutUsersInput";
+import { AccountUpdateManyWithoutUsersInput } from "./AccountUpdateManyWithoutUsersInput";
+import { PlaidIntegrationUpdateManyWithoutUsersInput } from "./PlaidIntegrationUpdateManyWithoutUsersInput";
 
 export type UserUpdateInput = {
   firstName?: string | null;
@@ -7,4 +10,7 @@ export type UserUpdateInput = {
   email?: string | null;
   password?: string;
   roles?: InputJsonValue;
+  budgets?: BudgetUpdateManyWithoutUsersInput;
+  accounts?: AccountUpdateManyWithoutUsersInput;
+  plaidIntegrations?: PlaidIntegrationUpdateManyWithoutUsersInput;
 };
