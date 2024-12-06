@@ -1,0 +1,84 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Transaction {
+  id          String                    @id @default(cuid())
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+  category    String?
+  description String?
+  account     Account?                  @relation(fields: [accountId], references: [id])
+  accountId   String?
+  amount      Float?
+  date        DateTime?
+  typeField   EnumTransactionTypeField?
+}
+
+model Account {
+  id           String                @id @default(cuid())
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  balance      Float?
+  typeField    EnumAccountTypeField?
+  institution  String?
+  user         User?                 @relation(fields: [userId], references: [id])
+  userId       String?
+  name         String?
+  transactions Transaction[]
+}
+
+model Budget {
+  id          String            @id @default(cuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  totalAmount Float?
+  startDate   DateTime?
+  endDate     DateTime?
+  user        User?             @relation(fields: [userId], references: [id])
+  userId      String?
+  period      EnumBudgetPeriod?
+}
+
+model PlaidIntegration {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  itemId          String?
+  institutionName String?
+  accessToken     String?
+  user            User?    @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model User {
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  firstName         String?
+  lastName          String?
+  username          String             @unique
+  email             String?            @unique
+  password          String
+  roles             Json
+  budgets           Budget[]
+  accounts          Account[]
+  plaidIntegrations PlaidIntegration[]
+}
+
+enum EnumTransactionTypeField {
+  Option1
+}
+
+enum EnumAccountTypeField {
+  Option1
+}
+
+enum EnumBudgetPeriod {
+  Option1
+}
